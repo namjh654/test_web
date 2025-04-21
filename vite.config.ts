@@ -5,6 +5,15 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   base: "/",
   plugins: [react()],
+  // resolve: {
+  //   alias: [
+  //     { find: '@', replacement: '/src' },
+  //     {
+  //       find: '@utils',
+  //       replacement: resolve(__dirname, 'src/utils'),
+  //     },
+  //   ],
+  // },
   server: {
     proxy: {
       '/api': {

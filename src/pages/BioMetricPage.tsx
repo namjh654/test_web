@@ -1,74 +1,116 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useBioMetric, useBioMetricList } from "../hooks/useBioMetric";
 import { Pagination } from "../components/Pagination";
 import { BioMetricChart } from "../components/BioMetricChart";
 import { BioMetricTable } from "../components/BioMetricTable";
 import { BiometricType, BiometricSelectType } from "../types/BioMetric/type";
+import { formatDateTime } from "../utils/date";
+import DateRangePicker from "../components/DatePicker";
+import EnumSelect from "../components/EnumSelect";
+import BloodPressureBarChart from "../components/BarChart";
 
-export const BioMetricPage: React.FC = () => {
+export const BioMetricPage = () => {
   const [page, setPage] = useState<number>(1);
-  const [size, setSize] = useState<number>(2); // 기본 사이즈 설정
+  const [size, setSize] = useState<number>(10);
 
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
+
+  const [selectedType, setSelectedType] = useState<BiometricType>(
+    Object.values(BiometricType)[0]
+  );
+  const [selectUnit, setSelectUnit] = useState<BiometricSelectType>(
+    Object.values(BiometricSelectType)[0]
+  );
 
   const memberSeqNo = 30024;
-  const biometricType = BiometricType.PULSE;
-  const testBioType = BiometricType.STEP;
-  const biometricSelectType = BiometricSelectType.DAY;
-  const start = "2025-01-01 01:00";
-  const end = "2025-12-01 01:00";
+  const start = startDate && endDate ? formatDateTime(startDate) : undefined;
+  const end = startDate && endDate ? formatDateTime(endDate) : undefined;  
 
   const { data: chartData, isLoading: isChartLoading } = useBioMetric({
     memberSeqNo,
-    biometricType:testBioType,
-    biometricSelectType,
+    biometricType: selectedType,
+    biometricSelectType: selectUnit,
     start,
-    end
+    end,
   });
 
-
-  // 전체 사용자 리스트 (페이지네이션 및 사이즈 반영)
   const {
     data: listData,
     isLoading: isListLoading,
-    isFetching,
   } = useBioMetricList({
     memberSeqNo,
-    biometricType,
-    biometricSelectType,
+    biometricType: selectedType,
+    biometricSelectType: selectUnit,
     start,
     end,
     page,
     size,
   });
 
-  // 로딩 중이면 로딩 표시
-  if (isChartLoading || isListLoading) {
-    return <div>로딩 중...</div>;
-  }
   return (
     <div className="p-6 space-y-6">
+      <section className="space-y-4">
+      <h2 className="text-xl font-bold">📅 필터</h2>
+
+      <div className="flex justify-between items-start gap-4">
+        {/* 기간 선택 */}
+        <div className="w-1/2">
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            onChangeStart={setStartDate}
+            onChangeEnd={setEndDate}
+          />
+        </div>
+
+        {/* 바이오메트릭 타입 선택 */}
+        <div className="flex gap-2 w-full">
+          <EnumSelect
+            value={selectedType}
+            onChange={setSelectedType}
+            options={Object.values(BiometricType)}
+          />
+          <EnumSelect
+            value={selectUnit}
+            onChange={setSelectUnit}
+            options={Object.values(BiometricSelectType)}
+          />
+        </div>
+      </div>
+    </section>
+
+      {/* 차트 */}
       <section>
-        <h2 className="text-xl font-bold mb-2">👤 생체 정보 그래프 및 리스트</h2>
-        {chartData && chartData.x.length > 0 && chartData.y.length > 0 ? (
-          <BioMetricChart data={chartData} />
+        <h2 className="text-xl font-bold mb-2">👤 생체 정보 그래프</h2>
+        {isChartLoading ? (
+        <p>차트 로딩 중...</p>
+        ) : chartData && chartData.x?.length > 0 ? (
+          selectedType === BiometricType.BLOOD_PRESSURE ? (
+            <BloodPressureBarChart data={chartData} />
+          ) : (
+            <BioMetricChart data={chartData} />
+          )
         ) : (
-          <p>심박수 데이터 없음</p>
+          <p>데이터 없음</p>
         )}
       </section>
 
+      {/* 테이블 */}
       <section>
-        <h2 className="text-xl font-bold mb-2">📋 전체 사용자 생체 정보</h2>
-        {isFetching && <p className="text-gray-500">데이터 갱신 중...</p>}
-        {listData ? (
+        <h2 className="text-xl font-bold mb-2">📋 전체 사용자 생체 정보 테이블 ({listData?.paging.total}개)</h2>
+        
+        {isListLoading ? (
+          <p>리스트 로딩 중...</p>
+        ) : listData ? (
           <>
             <BioMetricTable data={listData.data} />
-            {/* 사이즈와 데이터 전달 */}
             <Pagination
               page={page}
               total={listData.paging.total}
               size={size}
-              onPageChange={(newPage: number) => setPage(newPage)} // 페이지 번호 변경 시
-              onSizeChange={(newSize: number) => setSize(newSize)} // 사이즈 변경 시
+              onPageChange={setPage}
+              onSizeChange={setSize}
             />
           </>
         ) : (

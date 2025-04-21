@@ -16,7 +16,6 @@ export const BioMetricTable = ({ data }: Props) => {
           <th>ID</th>
           <th>디바이스</th>
           <th>측정일</th>
-          <th>심박수</th>
           <th>상태</th>
         </tr>
       </thead>
@@ -26,7 +25,6 @@ export const BioMetricTable = ({ data }: Props) => {
             <td>{item.id}</td>
             <td>{item.deviceName}</td>
             <td>{item.measurementDate}</td>
-            <td>{item.pulse}</td>
             <td>{item.status === 'NORMAL' ? "정상" : "경고"}</td>
           </tr>
         ))}

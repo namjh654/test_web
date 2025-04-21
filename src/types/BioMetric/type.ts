@@ -3,10 +3,14 @@
 //   heartRate: number; // 심박수
 // }
 
+export interface BloodPressurePoint {
+  bloodPressureMaximum: number;
+  bloodPressureMinimum: number;
+}
 
 export interface BioMetricGraph {
     x: string[],
-    y:string[],
+    y:string[] | BloodPressurePoint[],
     recentDate: string
 }
 
@@ -28,11 +32,11 @@ export enum BiometricType {
 
 // 조회 단위
 export enum BiometricSelectType {
-  DAY = 'day',
-  HOUR = 'hour',
   MINUTE = 'minute',
-  MONTH = 'month',
+  HOUR = 'hour',
+  DAY = 'day',
   WEEK = 'week',
+  MONTH = 'month',
 }
 
 
@@ -49,7 +53,6 @@ export interface BioMetricParams {
 
 export interface BioMetricItem {
   id: number;
-  pulse: number;
   measurementDate: string; // 예: "2025-04-18"
   deviceName: string; // 예: "inPHR Band"
   status: 'NORMAL' | 'WARNING';

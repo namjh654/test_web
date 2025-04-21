@@ -11,7 +11,7 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     // 토큰 하드코딩
-    const token ='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJST0xFX1NVUEVSX0FETUlOIiwiZXhwIjoxNzQ1ODAwMTI1fQ.8S0-DYII30Zo7lPRTG6Tkso7tBZ30eSBTdTEKQnQaKs';
+    const token ='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJST0xFX1NVUEVSX0FETUlOIiwiZXhwIjoxNzQ1ODE4MzU4fQ.0ZYPDJngNSSW7Maz47N8w-py_KnwDGACIe9qpvUsxkg';
 
     config.headers.Authorization = `Bearer ${token}`
 
