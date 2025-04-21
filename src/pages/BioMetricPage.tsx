@@ -3,13 +3,28 @@ import { useBioMetric, useBioMetricList } from "../hooks/useBioMetric";
 import { Pagination } from "../components/Pagination";
 import { BioMetricChart } from "../components/BioMetricChart";
 import { BioMetricTable } from "../components/BioMetricTable";
+import { BiometricType, BiometricSelectType } from "../types/BioMetric/type";
 
 export const BioMetricPage: React.FC = () => {
   const [page, setPage] = useState<number>(1);
-  const [size, setSize] = useState<number>(10); // 기본 사이즈 설정
+  const [size, setSize] = useState<number>(2); // 기본 사이즈 설정
 
-  // 단일 사용자 심박수 (최근 7일)
-  const { data: chartData, isLoading: isChartLoading } = useBioMetric(1);
+
+  const memberSeqNo = 30024;
+  const biometricType = BiometricType.PULSE;
+  const testBioType = BiometricType.STEP;
+  const biometricSelectType = BiometricSelectType.DAY;
+  const start = "2025-01-01 01:00";
+  const end = "2025-12-01 01:00";
+
+  const { data: chartData, isLoading: isChartLoading } = useBioMetric({
+    memberSeqNo,
+    biometricType:testBioType,
+    biometricSelectType,
+    start,
+    end
+  });
+
 
   // 전체 사용자 리스트 (페이지네이션 및 사이즈 반영)
   const {
@@ -17,11 +32,13 @@ export const BioMetricPage: React.FC = () => {
     isLoading: isListLoading,
     isFetching,
   } = useBioMetricList({
-    id: 1,
-    type: "heartRate",
-    date: "2025-04-20",
-    page, // 페이지 값 연동
-    size, // 사이즈 값 연동
+    memberSeqNo,
+    biometricType,
+    biometricSelectType,
+    start,
+    end,
+    page,
+    size,
   });
 
   // 로딩 중이면 로딩 표시
@@ -31,8 +48,8 @@ export const BioMetricPage: React.FC = () => {
   return (
     <div className="p-6 space-y-6">
       <section>
-        <h2 className="text-xl font-bold mb-2">👤 사용자 심박수 (최근 7일)</h2>
-        {Array.isArray(chartData) && chartData.length > 0 ? (
+        <h2 className="text-xl font-bold mb-2">👤 생체 정보 그래프 및 리스트</h2>
+        {chartData && chartData.x.length > 0 && chartData.y.length > 0 ? (
           <BioMetricChart data={chartData} />
         ) : (
           <p>심박수 데이터 없음</p>
@@ -48,7 +65,7 @@ export const BioMetricPage: React.FC = () => {
             {/* 사이즈와 데이터 전달 */}
             <Pagination
               page={page}
-              total={listData.totalCount}
+              total={listData.paging.total}
               size={size}
               onPageChange={(newPage: number) => setPage(newPage)} // 페이지 번호 변경 시
               onSizeChange={(newSize: number) => setSize(newSize)} // 사이즈 변경 시

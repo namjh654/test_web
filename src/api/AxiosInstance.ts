@@ -2,14 +2,19 @@ import axios from "axios";
 
 export const axiosInstance = axios.create({
   // baseURL: "https://api.example.com",
-  // baseURL: "/",
+  baseURL: import.meta.env.BASE_URL,
   timeout: 5000,
+  withCredentials: true, // 필요 시
 });
 
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
   (config) => {
-    console.log("요청:", config);
+    // 토큰 하드코딩
+    const token ='eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJST0xFX1NVUEVSX0FETUlOIiwiZXhwIjoxNzQ1ODAwMTI1fQ.8S0-DYII30Zo7lPRTG6Tkso7tBZ30eSBTdTEKQnQaKs';
+
+    config.headers.Authorization = `Bearer ${token}`
+
     return config;
   },
   (error) => {

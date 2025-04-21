@@ -15,9 +15,8 @@ export const BioMetricTable = ({ data }: Props) => {
         <tr className="bg-gray-100">
           <th>ID</th>
           <th>디바이스</th>
-          <th>타임스탬프</th>
+          <th>측정일</th>
           <th>심박수</th>
-          <th>체온</th>
           <th>상태</th>
         </tr>
       </thead>
@@ -25,11 +24,10 @@ export const BioMetricTable = ({ data }: Props) => {
         {data.map((item) => (
           <tr key={item.id} className="text-center border-t">
             <td>{item.id}</td>
-            <td>{item.device}</td>
-            <td>{new Date(item.timestamp).toLocaleString("ko-KR")}</td>
-            <td>{item.heartRate}</td>
-            <td>{item.temperature}°C</td>
-            <td>{item.status === "normal" ? "정상" : "경고"}</td>
+            <td>{item.deviceName}</td>
+            <td>{item.measurementDate}</td>
+            <td>{item.pulse}</td>
+            <td>{item.status === 'NORMAL' ? "정상" : "경고"}</td>
           </tr>
         ))}
       </tbody>
