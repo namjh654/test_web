@@ -1,13 +1,26 @@
-import { BioMetricItem } from "../types/BioMetric/type";
+import { useMemo } from "react";
+import { UserTableProps } from "../types/Table/type";
 
-interface Props {
-  data: BioMetricItem[];
-}
 
-export const BioMetricTable = ({ data }: Props) => {
-  if (!data || !Array.isArray(data)) return <p>표시할 데이터가 없습니다.</p>;
+export const BioMetricTable = ({ data }: UserTableProps) => {
+  const rows = useMemo(() => {
+    if (!Array.isArray(data)) return null;
 
-  // size만큼 잘라서 사용
+    return data.map((item) => (
+      <tr key={item.id} className="text-center border-t">
+        <td>{item.id}</td>
+        <td>{item.deviceName ?? "N/A"}</td>
+        <td>{item.measurementDate}</td>
+        <td>{item.status === "NORMAL" ? "정상" : "경고"}</td>
+      </tr>
+    ));
+  }, [data]);
+
+  if (!rows || rows.length === 0) {
+    return (
+      <div className="text-center text-gray-500 p-4">표시할 데이터가 없습니다.</div>
+    );
+  }
 
   return (
     <table className="w-full border">
@@ -20,14 +33,7 @@ export const BioMetricTable = ({ data }: Props) => {
         </tr>
       </thead>
       <tbody>
-        {data.map((item) => (
-          <tr key={item.id} className="text-center border-t">
-            <td>{item.id}</td>
-            <td>{item.deviceName}</td>
-            <td>{item.measurementDate}</td>
-            <td>{item.status === 'NORMAL' ? "정상" : "경고"}</td>
-          </tr>
-        ))}
+        {rows}
       </tbody>
     </table>
   );

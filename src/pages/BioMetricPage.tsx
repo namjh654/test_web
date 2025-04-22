@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useBioMetric, useBioMetricList } from "../hooks/useBioMetric";
 import { Pagination } from "../components/Pagination";
 import { BioMetricChart } from "../components/BioMetricChart";
@@ -24,26 +24,23 @@ export const BioMetricPage = () => {
   );
 
   const memberSeqNo = 30024;
-  const start = startDate && endDate ? formatDateTime(startDate) : undefined;
-  const end = startDate && endDate ? formatDateTime(endDate) : undefined;  
-
-  const { data: chartData, isLoading: isChartLoading } = useBioMetric({
+  const biometricTypeOptions = useMemo(() => Object.values(BiometricType), []);
+const biometricSelectTypeOptions = useMemo(() => Object.values(BiometricSelectType), []);
+  const filters = useMemo(() => ({
     memberSeqNo,
     biometricType: selectedType,
     biometricSelectType: selectUnit,
-    start,
-    end,
-  });
+    start: startDate && endDate ? formatDateTime(startDate) : undefined,
+    end: startDate && endDate ? formatDateTime(endDate) : undefined
+  }), [memberSeqNo, selectedType, selectUnit, startDate, endDate]);
+  
+  const { data: chartData, isLoading: isChartLoading } = useBioMetric(filters);
 
   const {
     data: listData,
     isLoading: isListLoading,
   } = useBioMetricList({
-    memberSeqNo,
-    biometricType: selectedType,
-    biometricSelectType: selectUnit,
-    start,
-    end,
+    ...filters,
     page,
     size,
   });
@@ -69,12 +66,12 @@ export const BioMetricPage = () => {
           <EnumSelect
             value={selectedType}
             onChange={setSelectedType}
-            options={Object.values(BiometricType)}
+            options={biometricTypeOptions}
           />
           <EnumSelect
             value={selectUnit}
             onChange={setSelectUnit}
-            options={Object.values(BiometricSelectType)}
+            options={biometricSelectTypeOptions}
           />
         </div>
       </div>
@@ -89,7 +86,7 @@ export const BioMetricPage = () => {
           selectedType === BiometricType.BLOOD_PRESSURE ? (
             <BloodPressureBarChart data={chartData} />
           ) : (
-            <BioMetricChart data={chartData} />
+            <BioMetricChart data={chartData} type={selectedType} />
           )
         ) : (
           <p>데이터 없음</p>
@@ -120,3 +117,4 @@ export const BioMetricPage = () => {
     </div>
   );
 };
+

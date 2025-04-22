@@ -3,16 +3,25 @@
 //   heartRate: number; // 심박수
 // }
 
+import { PagingInfo } from "../Pagenation/type";
+
 export interface BloodPressurePoint {
   bloodPressureMaximum: number;
   bloodPressureMinimum: number;
 }
 
+export interface DeviceSensorPoint {
+  lightLevel: number;   // 소수점 포함
+  proximity: number;    // 정수
+}
+
 export interface BioMetricGraph {
     x: string[],
-    y:string[] | BloodPressurePoint[],
+    y:string[] | BloodPressurePoint[]|DeviceSensorPoint[],
     recentDate: string
 }
+
+
 
 // 생체 정보 타입
 export enum BiometricType {
@@ -57,12 +66,9 @@ export interface BioMetricItem {
   deviceName: string; // 예: "inPHR Band"
   status: 'NORMAL' | 'WARNING';
 }
+
 // 전체 생체 정보 리스트 응답 데이터 (페이지네이션 포함)
 export interface BioMetricResponse {
-  paging:{
-    offset:number;
-    size:number;
-    total:number;
-  }
+  paging:PagingInfo;
   data: BioMetricItem[]; 
 }

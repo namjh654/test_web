@@ -2,12 +2,17 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { BioMetricPage } from "../pages/BioMetricPage";
 import { NotFound } from "../pages/NotFound";
+import LoginPage from "../pages/LoginPage";
 
 const routes = [
   {
     path: "/",
-    element: <BioMetricPage />,
+    element:<LoginPage/>,
   },
+  {
+    path:'/dashboard',
+    element: <BioMetricPage />,
+  }
   // 추가 페이지는 여기에 추가 가능
   // {
   //   path: "/new-page",
@@ -18,7 +23,7 @@ const routes = [
 const router = createBrowserRouter([
   ...routes, // routes 배열에서 라우터 설정
   {
-    path: "*", // 모든 잘못된 경로를 처리
+    path: "/*", // 모든 잘못된 경로를 처리
     element: <NotFound />,
   },
 ]);
